@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { login } from '../services/authService'
 
 function Login() {
   const [usuario, setUsuario] = useState('')
   const [contrasena, setContrasena] = useState('')
   const [error, setError] = useState(false)
+  const [cargando, setCargando] = useState(false)
   const navigate = useNavigate()
 
-  function iniciarSesion() {
-    if (usuario === 'admin' && contrasena === '1234') {
-      localStorage.setItem('sesionAdmin', 'true')
+  async function iniciarSesion() {
+    if (!usuario || !contrasena) { setError(true); return }
+    setCargando(true)
+    const res = await login(usuario, contrasena)
+    setCargando(false)
+    if (res.ok) {
       navigate('/dashboard')
     } else {
       setError(true)
@@ -51,12 +56,12 @@ function Login() {
           <input
             type="text"
             value={usuario}
-            onChange={e => setUsuario(e.target.value)}
+            onChange={e => { setUsuario(e.target.value); setError(false) }}
             placeholder="Ingresa tu usuario"
             style={{
               width: '100%', background: '#0d1117', border: '1px solid #30363d',
               color: '#e6edf3', borderRadius: '8px', padding: '10px 14px',
-              fontSize: '0.95rem', outline: 'none'
+              fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box'
             }}
           />
         </div>
@@ -68,27 +73,28 @@ function Login() {
           <input
             type="password"
             value={contrasena}
-            onChange={e => setContrasena(e.target.value)}
+            onChange={e => { setContrasena(e.target.value); setError(false) }}
             onKeyDown={e => e.key === 'Enter' && iniciarSesion()}
             placeholder="Ingresa tu contraseña"
             style={{
               width: '100%', background: '#0d1117', border: '1px solid #30363d',
               color: '#e6edf3', borderRadius: '8px', padding: '10px 14px',
-              fontSize: '0.95rem', outline: 'none'
+              fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box'
             }}
           />
         </div>
 
         <button
           onClick={iniciarSesion}
+          disabled={cargando}
           style={{
-            width: '100%', background: '#1e8a5e', border: 'none',
+            width: '100%', background: cargando ? '#145c3f' : '#1e8a5e', border: 'none',
             color: '#fff', borderRadius: '8px', padding: '11px',
-            fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer',
+            fontSize: '0.95rem', fontWeight: '600', cursor: cargando ? 'not-allowed' : 'pointer',
             marginTop: '8px'
           }}
         >
-          Iniciar sesión
+          {cargando ? 'Ingresando...' : 'Iniciar sesión'}
         </button>
 
         <div style={{ textAlign: 'center', marginTop: '24px' }}>

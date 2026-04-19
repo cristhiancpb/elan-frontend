@@ -7,19 +7,23 @@ import Inventario from './pages/Inventario'
 import Reportes from './pages/Reportes'
 import Catalogo from './pages/Catalogo'
 import Carrito from './pages/Carrito'
+import PrivateRoute from './components/PrivateRoute'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rutas públicas — cualquiera puede entrar */}
         <Route path="/" element={<Catalogo />} />
         <Route path="/carrito" element={<Carrito />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/productos" element={<Productos />} />
-        <Route path="/ventas" element={<Ventas />} />
-        <Route path="/inventario" element={<Inventario />} />
-        <Route path="/reportes" element={<Reportes />} />
+
+        {/* Rutas protegidas — solo si está autenticado */}
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/productos" element={<PrivateRoute><Productos /></PrivateRoute>} />
+        <Route path="/ventas" element={<PrivateRoute><Ventas /></PrivateRoute>} />
+        <Route path="/inventario" element={<PrivateRoute><Inventario /></PrivateRoute>} />
+        <Route path="/reportes" element={<PrivateRoute><Reportes /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   )
